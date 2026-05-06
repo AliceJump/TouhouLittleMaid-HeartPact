@@ -137,6 +137,11 @@ public class MaidCarryProxyEntity extends Entity {
     }
 
     @Override
+    public boolean canChangeDimensions() {
+        return false;
+    }
+
+    @Override
     public boolean shouldBeSaved() {
         return false;
     }
