@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "maidmarriage-refmap.json",
   "mixins": [
+    "EntityMaidPortalMixin",
     "QueryBindingLiftStateMixin",
     "YsmTlmMolangCompatMixin"
   ],
