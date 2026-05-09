@@ -1,6 +1,6 @@
 # Touhou Little Maid: Heart Pact
 
-**Touhou Little Maid: Heart Pact**（车万女仆：心契同眠）是一款面向 **Minecraft Forge 1.20.1** 的《车万女仆》恋爱、婚姻与家庭扩展模组。
+**Touhou Little Maid: Heart Pact**（车万女仆：心契同眠）是一款面向 **Minecraft NeoForge 1.21.1** 的《车万女仆》恋爱、婚姻与家庭扩展模组。
 
 它把《Touhou Little Maid》从单纯的冒险辅助扩展成一段可以慢慢经营的 GalGame 式情感旅程：从清晨的问候到深夜的闲聊，从随手摸头到认真拥抱，从送出一份心仪的礼物，到终于鼓起勇气说出那句“喜欢”。当感情足够深时，你可以向她表白、交换戒指、结为伴侣，并在婚后的生活中迎来属于你们的小女仆。
 
@@ -196,8 +196,8 @@ YES 枕头
 
 ## 前置与环境
 
-- Minecraft：`1.20.1`
-- 加载器：`Forge`
+- Minecraft：`1.21.1`
+- 加载器：`NeoForge`
 - 前置模组：`Touhou Little Maid`
 
 ## 协议
@@ -208,4 +208,3 @@ YES 枕头
 
 作者：Asumi-Nishiki，AliceJmup，yunchenqwq  
 美术：Asumi-Nishiki，yunchenqwq，RhineIris
-
