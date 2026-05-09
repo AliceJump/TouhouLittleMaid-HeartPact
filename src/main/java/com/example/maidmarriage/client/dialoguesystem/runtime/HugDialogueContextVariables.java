@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -274,7 +275,7 @@ public final class HugDialogueContextVariables {
             };
         }
         if (stage == MaidChildEntity.GrowthStage.INFANT) {
-            return "咿呀咿呀咿呀……呜呜呜呜。\n她似乎还不会说话。\n小女仆才刚出生，请不要强制把她放下来。";
+            return I18n.get("dialogue.maidmarriage.carry_child.infant_entry");
         }
         return address + "，今天也要陪我玩吗？我会乖乖听话的！";
     }

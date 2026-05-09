@@ -1,4 +1,4 @@
-﻿{
+{
   "entities": [
     "maidmarriage:maid_child"
   ],
@@ -13,7 +13,6 @@
     "hands",
     "necklace",
     "ring",
-
     "scroll",
     "feet",
     "spellbook"

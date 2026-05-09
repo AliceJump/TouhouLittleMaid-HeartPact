@@ -464,6 +464,7 @@
   "dialogue.maidmarriage.carry_child.infant_hold.3": "%2$s，你看她睡得这么乖……今天就先交给妈妈抱着吧。",
   "dialogue.maidmarriage.carry_child.infant_hold.4": "%2$s，她刚刚还抓着我的衣角呢。现在放下的话，她会不安的。",
   "dialogue.maidmarriage.carry_child.infant_hold.5": "%2$s，第一天就让她多听听妈妈的心跳吧。明天她会更有精神的。",
+  "dialogue.maidmarriage.carry_child.infant_entry": "咿呀咿呀咿呀……呜呜呜呜。\n她似乎还不会说话。\n小女仆才刚出生，请不要强制把她放下来。",
   "message.maidmarriage.carry_child.no_child": "附近没有可以抱起的小女仆。",
   "message.maidmarriage.carry_child.need_owner": "只能让自己的小女仆被抱起：%s",
   "message.maidmarriage.carry_child.need_child": "%s 不是小女仆，不能被这样抱起。",

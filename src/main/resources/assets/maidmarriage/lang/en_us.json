@@ -458,6 +458,7 @@
   "dialogue.maidmarriage.carry_child.infant_hold.3": "%2$s, look how peacefully she is sleeping... let mama hold her today.",
   "dialogue.maidmarriage.carry_child.infant_hold.4": "%2$s, she was just holding onto my sleeve. Putting her down now would make her uneasy.",
   "dialogue.maidmarriage.carry_child.infant_hold.5": "%2$s, let her listen to mama's heartbeat on her first day. She will be stronger tomorrow.",
+  "dialogue.maidmarriage.carry_child.infant_entry": "Yiya yiya yiya... wuuu wuuu.\nShe still cannot speak yet.\nShe was just born today, so please do not force her onto the ground.",
   "message.maidmarriage.carry_child.no_child": "No little maid nearby can be carried right now.",
   "message.maidmarriage.carry_child.need_owner": "You can only use this on your own little maid: %s",
   "message.maidmarriage.carry_child.need_child": "%s is not a little maid and cannot be carried like this.",
