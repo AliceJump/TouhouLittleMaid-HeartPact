@@ -50,7 +50,7 @@ public final class YsmRuntimeHugPoseBridge {
      * 本桥支持的“固定姿态动作”。
      *
      * <p>以后需要新增新的 YSM 固定姿态时，只在这里增加枚举值，
-     * 再在 {@link #resolveFixedPoseAction(EntityMaid)} 和 {@link #applyFixedPose(FixedPoseAction, Map)}
+     * 再在 {@link #resolveFixedPoseAction(EntityMaid)} 和 {@link #applyFixedPose(FixedPoseAction, Map, float)}
      * 两处接入状态判定与骨骼参数，避免各个动作到处散落反射改骨代码。
      */
     private enum FixedPoseAction {

@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -67,8 +68,8 @@ public final class ChildNameScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
         int panelLeft = this.width / 2 - 150;
         int panelTop = this.height / 2 - 70;
         graphics.fill(panelLeft, panelTop, panelLeft + 300, panelTop + 140, 0xEE171520);

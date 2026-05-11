@@ -24,7 +24,7 @@ public final class ModEntities {
                     EntityType.Builder.of(MaidChildEntity::new, MobCategory.CREATURE)
                             .sized(0.6F, 1.5F)
                             .clientTrackingRange(10)
-                            .build(new ResourceLocation(MaidMarriageMod.MOD_ID, "maid_child").toString()));
+                            .build(ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "maid_child").toString()));
 
     public static final RegistryObject<EntityType<LiftProxyEntity>> LIFT_PROXY =
             ENTITY_TYPES.register("lift_proxy", () ->
@@ -34,7 +34,7 @@ public final class ModEntities {
                             .updateInterval(1)
                             .noSave()
                             .noSummon()
-                            .build(new ResourceLocation(MaidMarriageMod.MOD_ID, "lift_proxy").toString()));
+                            .build(ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "lift_proxy").toString()));
 
     public static final RegistryObject<EntityType<MaidCarryProxyEntity>> MAID_CARRY_PROXY =
             ENTITY_TYPES.register("maid_carry_proxy", () ->
@@ -44,7 +44,7 @@ public final class ModEntities {
                             .updateInterval(1)
                             .noSave()
                             .noSummon()
-                            .build(new ResourceLocation(MaidMarriageMod.MOD_ID, "maid_carry_proxy").toString()));
+                            .build(ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "maid_carry_proxy").toString()));
 
     private ModEntities() {
     }

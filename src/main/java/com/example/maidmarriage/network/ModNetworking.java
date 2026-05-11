@@ -48,7 +48,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public final class ModNetworking {
     private static final String PROTOCOL = "15";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(MaidMarriageMod.MOD_ID, "main"),
+            ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "main"),
             () -> PROTOCOL,
             ModNetworking::acceptRemoteVersion,
             ModNetworking::acceptRemoteVersion

@@ -132,7 +132,7 @@ public class MaidMarriageGuideScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
 
         int panelLeft = this.width / 2 - PANEL_WIDTH / 2;
         int panelRight = this.width / 2 + PANEL_WIDTH / 2;
@@ -176,8 +176,18 @@ public class MaidMarriageGuideScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        scroll = Mth.clamp(scroll - (int) Math.round(delta * 18.0D), 0, maxScroll);
+    public boolean mouseScrolled(
+            double mouseX,
+            double mouseY,
+            double scrollX,
+            double scrollY
+    ) {
+        scroll = Mth.clamp(
+                scroll - (int) Math.round(scrollY * 18.0D),
+                0,
+                maxScroll
+        );
+
         return true;
     }
 

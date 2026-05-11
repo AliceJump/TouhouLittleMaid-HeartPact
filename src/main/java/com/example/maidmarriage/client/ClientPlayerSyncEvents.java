@@ -5,14 +5,20 @@ import com.example.maidmarriage.config.ModConfigs;
 import com.example.maidmarriage.network.ModNetworking;
 import com.example.maidmarriage.network.payload.UpdateMaidAddressingPayload;
 import com.example.maidmarriage.network.payload.UpdatePlayerSettingsPayload;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.client.Minecraft;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
-@Mod.EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(
+        modid = MaidMarriageMod.MOD_ID,
+        bus = EventBusSubscriber.Bus.GAME,
+        value = Dist.CLIENT
+)
 public final class ClientPlayerSyncEvents {
+
     private ClientPlayerSyncEvents() {
     }
 
@@ -21,6 +27,7 @@ public final class ClientPlayerSyncEvents {
         ModNetworking.sendUpdateMaidAddressing(new UpdateMaidAddressingPayload(
                 ModConfigs.maidAddressing(),
                 ModConfigs.childMaidAddressing()));
+
         ModNetworking.sendUpdatePlayerSettings(new UpdatePlayerSettingsPayload(
                 ModConfigs.liftHeight(),
                 ModConfigs.hugDistance(),
@@ -34,13 +41,12 @@ public final class ClientPlayerSyncEvents {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
-        net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getInstance();
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft minecraft = Minecraft.getInstance();
+
         HugClientState.tick(minecraft);
         ChildInteractionClientState.tick(minecraft);
+
         HugClientState.ensureActionScreen(minecraft);
         ChildInteractionClientState.ensureActionScreen(minecraft);
     }

@@ -17,7 +17,6 @@ import com.example.maidmarriage.client.dialoguesystem.runtime.DialogueChoiceView
 import com.example.maidmarriage.client.dialoguesystem.runtime.DialogueFrameView;
 import com.example.maidmarriage.client.dialoguesystem.runtime.HugDialogueRuntimeBridge;
 import com.example.maidmarriage.client.dialoguesystem.runtime.HugStoryResumeState;
-import com.example.maidmarriage.client.dialoguesystem.runtime.HugDialogueStageFlavorComposer;
 import com.example.maidmarriage.compat.MaidMoodManager;
 import com.example.maidmarriage.compat.MaidRelationshipManager;
 import com.example.maidmarriage.compat.RelationStage;
@@ -39,11 +38,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -62,7 +62,7 @@ import org.lwjgl.glfw.GLFW;
  * <p>这样后续继续扩动作、扩剧情、扩表情和 UI 动画时，
  * 我们就不需要再往这个类里继续堆 switch-case 了。
  */
-@Mod.EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class HugActionScreen extends Screen {
     private static final Pattern STRUCTURED_DIALOGUE_LINE = Pattern.compile("^(女仆|旁白|玩家)\\s*[：:]\\s*(.+)$");
     /**
@@ -71,7 +71,7 @@ public class HugActionScreen extends Screen {
      * <p>如果新剧情没有声明自己的主题，
      * 或者声明的主题资源写错了，就自动回退到这里。
      */
-    private static final ResourceLocation DEFAULT_THEME_ID = new ResourceLocation(MaidMarriageMod.MOD_ID, "hug_default");
+    private static final ResourceLocation DEFAULT_THEME_ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "hug_default");
 
     /**
      * 当前接入旧拥抱 UI 的新剧情场景。
@@ -79,23 +79,23 @@ public class HugActionScreen extends Screen {
      * <p>这里故意写成常量，
      * 方便后面逐步把旧的拥抱菜单完整迁到新的场景 JSON 上。
      */
-    private static final ResourceLocation HUG_SCENARIO_ID = new ResourceLocation(MaidMarriageMod.MOD_ID, "hug_menu_v2");
-    private static final ResourceLocation CHILD_SCENARIO_ID = new ResourceLocation(MaidMarriageMod.MOD_ID, "child_interaction_v1");
+    private static final ResourceLocation HUG_SCENARIO_ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "hug_menu_v2");
+    private static final ResourceLocation CHILD_SCENARIO_ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "child_interaction_v1");
 
     /**
      * 旧界面右上角的“隐藏 UI”按钮图标。
      */
-    private static final ResourceLocation HIDE_ICON = new ResourceLocation(MaidMarriageMod.MOD_ID, "textures/gui/hug_hide_icon.png");
+    private static final ResourceLocation HIDE_ICON = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "textures/gui/hug_hide_icon.png");
 
     /**
      * 旧界面右上角的“退出拥抱”按钮图标。
      */
-    private static final ResourceLocation EXIT_ICON = new ResourceLocation(MaidMarriageMod.MOD_ID, "textures/gui/hug_exit_icon.png");
+    private static final ResourceLocation EXIT_ICON = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "textures/gui/hug_exit_icon.png");
 
     /**
      * 当剧情没有提供可解析的表情贴图时使用的兜底贴图。
      */
-    private static final ResourceLocation SOFT_SMILE = new ResourceLocation(MaidMarriageMod.MOD_ID, "textures/gui/emotion/soft_smile.png");
+    private static final ResourceLocation SOFT_SMILE = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "textures/gui/emotion/soft_smile.png");
 
     /**
      * 旧资源里常用的“脸红/热笑”贴图。
@@ -103,7 +103,7 @@ public class HugActionScreen extends Screen {
      * <p>当前虽然不再由 Screen 自己写死切换逻辑，
      * 但这个资源仍然有保留价值，后续剧情和表情系统都还能继续复用。
      */
-    private static final ResourceLocation HOT_SMILE = new ResourceLocation(MaidMarriageMod.MOD_ID, "textures/gui/emotion/hot_smile.png");
+    private static final ResourceLocation HOT_SMILE = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "textures/gui/emotion/hot_smile.png");
 
     /**
      * 旧 UI 的紧凑显示开关。
@@ -499,8 +499,13 @@ public class HugActionScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        HugCameraZoom.adjustHugZoom(delta);
+    public boolean mouseScrolled(
+            double mouseX,
+            double mouseY,
+            double scrollX,
+            double scrollY
+    ) {
+        HugCameraZoom.adjustHugZoom(scrollY);
         return true;
     }
 
@@ -526,13 +531,18 @@ public class HugActionScreen extends Screen {
      * 在拥抱 UI 打开时，继续隐藏原版热键栏和聊天栏。
      */
     @SubscribeEvent
-    public static void hideVanillaHudWhenHugUiActive(RenderGuiOverlayEvent.Pre event) {
+    public static void hideVanillaHudWhenHugUiActive(RenderGuiLayerEvent.Pre event) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (!(minecraft.screen instanceof HugActionScreen screen) || !screen.shouldHideVanillaHud()) {
+
+        if (!(minecraft.screen instanceof HugActionScreen screen)
+                || !screen.shouldHideVanillaHud()) {
             return;
         }
-        if (event.getOverlay().id().equals(VanillaGuiOverlay.HOTBAR.id())
-                || event.getOverlay().id().equals(VanillaGuiOverlay.CHAT_PANEL.id())) {
+
+        ResourceLocation id = event.getName();
+
+        if (id.equals(VanillaGuiLayers.HOTBAR)
+                || id.equals(VanillaGuiLayers.CHAT)) {
             event.setCanceled(true);
         }
     }

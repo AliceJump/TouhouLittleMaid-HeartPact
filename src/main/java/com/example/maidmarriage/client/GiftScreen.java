@@ -79,7 +79,7 @@ public final class GiftScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
         int panelLeft = this.width / 2 - 176;
         int panelTop = this.height / 2 - 111;
         int panelRight = panelLeft + 352;

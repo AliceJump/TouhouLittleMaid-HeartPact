@@ -28,7 +28,7 @@ public final class DialogueScenarioLoader {
     }
 
     public static DialogueScenario load(ResourceLocation id) {
-        ResourceLocation resolvedId = id == null ? new ResourceLocation("maidmarriage", "hug_menu_v2") : id;
+        ResourceLocation resolvedId = id == null ? ResourceLocation.fromNamespaceAndPath("maidmarriage", "hug_menu_v2") : id;
         return CACHE.computeIfAbsent(resolvedId, DialogueScenarioLoader::readScenario);
     }
 
@@ -37,7 +37,7 @@ public final class DialogueScenarioLoader {
     }
 
     private static DialogueScenario readScenario(ResourceLocation id) {
-        ResourceLocation file = new ResourceLocation(id.getNamespace(), "dialogue/scenarios/" + id.getPath() + ".json");
+        ResourceLocation file = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "dialogue/scenarios/" + id.getPath() + ".json");
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft == null) {
             return new DialogueScenario().normalize(id);

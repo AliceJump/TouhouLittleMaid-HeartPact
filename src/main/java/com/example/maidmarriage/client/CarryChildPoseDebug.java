@@ -6,11 +6,11 @@ import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -20,7 +20,7 @@ import org.lwjgl.glfw.GLFW;
  * 游戏内按 F8 开关调试面板，然后使用 Alt + 方向键切换/调整参数。
  * 调好以后把左上角显示的数值发出来，再固化回默认常量即可。
  */
-@Mod.EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public final class CarryChildPoseDebug {
     private static final PoseParam[] PARAMS = PoseParam.values();
 
@@ -67,10 +67,10 @@ public final class CarryChildPoseDebug {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
+    public static void onClientTick(ClientTickEvent event) {
+//        if (event.phase != TickEvent.Phase.END) {
+//            return;
+//        }
         if (!ModConfigs.enableDebugTools()) {
             enabled = false;
             clearKeyEdges();
@@ -139,7 +139,7 @@ public final class CarryChildPoseDebug {
     }
 
     @SubscribeEvent
-    public static void onRender(RenderGuiOverlayEvent.Post event) {
+    public static void onRender(RenderGuiEvent.Post event) {
         if (!enabled || !ModConfigs.enableDebugTools()) {
             return;
         }
@@ -274,7 +274,7 @@ public final class CarryChildPoseDebug {
                 bedrockRotX, bedrockRotY, bedrockRotZ, bedrockShiftX, bedrockShiftY, bedrockShiftZ, bedrockTranslateX, bedrockTranslateY, bedrockTranslateZ);
     }
 
-    private static void draw(RenderGuiOverlayEvent.Post event, Font font, int x, int y, String text, int color) {
+    private static void draw(RenderGuiEvent.Post event, Font font, int x, int y, String text, int color) {
         event.getGuiGraphics().drawString(font, text, x, y, color, true);
     }
 

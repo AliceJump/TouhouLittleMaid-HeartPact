@@ -14,29 +14,47 @@ import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 
-@Mod.EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+/**
+ * 怀孕 / 成长调试 HUD。
+ *
+ * <p>左上角：
+ * - 分娩倒计时
+ * - 成长倒计时
+ * - 产后恢复倒计时
+ *
+ * <p>右上角：
+ * - 临近分娩红色警告
+ */
+@EventBusSubscriber(
+        modid = MaidMarriageMod.MOD_ID,
+        bus = EventBusSubscriber.Bus.GAME,
+        value = Dist.CLIENT
+)
 public final class PregnancyDebugOverlay {
     private PregnancyDebugOverlay() {
     }
 
     @SubscribeEvent
-    public static void onRender(RenderGuiOverlayEvent.Post event) {
+    public static void onRender(RenderGuiEvent.Post event) {
         boolean showPregnancyDebug = ModConfigs.showPregnancyDebugCountdown();
+
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) {
             return;
         }
 
         AABB search = mc.player.getBoundingBox().inflate(64.0D);
+
         List<EntityMaid> maids = mc.level.getEntitiesOfClass(
                 EntityMaid.class,
                 search,
                 maid -> maid.isOwnedBy(mc.player));
+
         if (maids.isEmpty()) {
             return;
         }
@@ -44,59 +62,145 @@ public final class PregnancyDebugOverlay {
         renderUpcomingBirthWarning(event.getGuiGraphics(), mc, maids);
 
         List<OverlayLine> lines = new ArrayList<>();
+
         if (showPregnancyDebug) {
             int adultAfterTicks = Math.max(1, ModConfigs.childGrowthDays()) * 24000;
+
             for (EntityMaid maid : maids) {
                 PregnancyData data = maid.getData(ModTaskData.PREGNANCY_DATA);
+
+                /*
+                 * 怀孕倒计时
+                 */
                 if (data != null && data.pregnant()) {
                     long needTicks = (long) ModConfigs.pregnancyBirthDays() * 24000L;
-                    long passedTicks = Math.max(0L, maid.level().getGameTime() - data.conceivedGameTime());
+
+                    long passedTicks = Math.max(
+                            0L,
+                            maid.level().getGameTime() - data.conceivedGameTime());
+
                     long leftTicks = Math.max(0L, needTicks - passedTicks);
+
                     long leftSeconds = (long) Math.ceil(leftTicks / 20.0D);
-                    Component text = Component.translatable("overlay.maidmarriage.debug.birth_countdown", maid.getName(), formatSeconds(leftSeconds));
-                    lines.add(new OverlayLine(leftTicks, 0xFF8BFF98, text));
+
+                    Component text = Component.translatable(
+                            "overlay.maidmarriage.debug.birth_countdown",
+                            maid.getName(),
+                            formatSeconds(leftSeconds));
+
+                    lines.add(new OverlayLine(
+                            leftTicks,
+                            0xFF8BFF98,
+                            text));
                 }
+
+                /*
+                 * 小女仆成长倒计时
+                 */
                 if (MaidChildEntity.shouldStayChild(maid)) {
                     int growthTicks = resolveGrowthTicks(maid);
-                    long leftTicks = Math.max(0L, (long) adultAfterTicks - growthTicks);
+
+                    long leftTicks = Math.max(
+                            0L,
+                            (long) adultAfterTicks - growthTicks);
+
                     long leftSeconds = (long) Math.ceil(leftTicks / 20.0D);
-                    Component text = Component.translatable("overlay.maidmarriage.debug.growth_countdown", maid.getName(), formatSeconds(leftSeconds));
-                    lines.add(new OverlayLine(leftTicks, 0xFF8BD7FF, text));
+
+                    Component text = Component.translatable(
+                            "overlay.maidmarriage.debug.growth_countdown",
+                            maid.getName(),
+                            formatSeconds(leftSeconds));
+
+                    lines.add(new OverlayLine(
+                            leftTicks,
+                            0xFF8BD7FF,
+                            text));
+
+                    /*
+                     * 发卡暂停成长提示
+                     */
                     if (GrowthPauseUtil.hasSunflowerHairpin(maid)) {
-                        lines.add(new OverlayLine(leftTicks, 0xFFFFD38B,
-                                Component.translatable("overlay.maidmarriage.debug.growth_paused_hairpin")));
+                        lines.add(new OverlayLine(
+                                leftTicks,
+                                0xFFFFD38B,
+                                Component.translatable(
+                                        "overlay.maidmarriage.debug.growth_paused_hairpin")));
                     }
                 }
             }
         }
 
+        /*
+         * 产后恢复倒计时
+         */
         long now = mc.level.getGameTime();
+
         for (EntityMaid maid : maids) {
             PregnancyData data = maid.getData(ModTaskData.PREGNANCY_DATA);
+
             if (data == null || !data.isInPostpartumRecovery(now)) {
                 continue;
             }
-            long leftTicks = Math.max(0L, data.postpartumEndGameTime() - now);
+
+            long leftTicks = Math.max(
+                    0L,
+                    data.postpartumEndGameTime() - now);
+
             long leftSeconds = (long) Math.ceil(leftTicks / 20.0D);
-            Component text = Component.translatable("overlay.maidmarriage.postpartum_countdown", maid.getName(), formatSeconds(leftSeconds));
-            lines.add(new OverlayLine(leftTicks, 0xFFFFD38B, text));
+
+            Component text = Component.translatable(
+                    "overlay.maidmarriage.postpartum_countdown",
+                    maid.getName(),
+                    formatSeconds(leftSeconds));
+
+            lines.add(new OverlayLine(
+                    leftTicks,
+                    0xFFFFD38B,
+                    text));
         }
 
         if (lines.isEmpty()) {
             return;
         }
 
-        lines.sort(Comparator.comparingLong(OverlayLine::sortTicks).thenComparingInt(OverlayLine::color));
+        /*
+         * 时间越短越靠前
+         */
+        lines.sort(
+                Comparator.comparingLong(OverlayLine::sortTicks)
+                        .thenComparingInt(OverlayLine::color));
+
         int drawY = 8;
         int maxLines = 8;
+
         for (int i = 0; i < Math.min(lines.size(), maxLines); i++) {
             OverlayLine line = lines.get(i);
-            event.getGuiGraphics().drawString(mc.font, line.text(), 8, drawY, line.color(), true);
+
+            event.getGuiGraphics().drawString(
+                    mc.font,
+                    line.text(),
+                    8,
+                    drawY,
+                    line.color(),
+                    true);
+
             drawY += 10;
         }
+
+        /*
+         * 超出行数省略
+         */
         if (lines.size() > maxLines) {
-            Component more = Component.literal("... +" + (lines.size() - maxLines));
-            event.getGuiGraphics().drawString(mc.font, more, 8, drawY, 0xFFB8B8B8, true);
+            Component more = Component.literal(
+                    "... +" + (lines.size() - maxLines));
+
+            event.getGuiGraphics().drawString(
+                    mc.font,
+                    more,
+                    8,
+                    drawY,
+                    0xFFB8B8B8,
+                    true);
         }
     }
 
@@ -104,55 +208,112 @@ public final class PregnancyDebugOverlay {
         long hours = totalSeconds / 3600L;
         long minutes = (totalSeconds % 3600L) / 60L;
         long seconds = totalSeconds % 60L;
+
         if (hours > 0) {
-            return String.format(Locale.ROOT, "%d:%02d:%02d", hours, minutes, seconds);
+            return String.format(
+                    Locale.ROOT,
+                    "%d:%02d:%02d",
+                    hours,
+                    minutes,
+                    seconds);
         }
-        return String.format(Locale.ROOT, "%02d:%02d", minutes, seconds);
+
+        return String.format(
+                Locale.ROOT,
+                "%02d:%02d",
+                minutes,
+                seconds);
     }
 
     private static int resolveGrowthTicks(EntityMaid maid) {
         if (maid instanceof MaidChildEntity child) {
             return Math.max(0, child.debugGrowthTicks());
         }
-        com.example.maidmarriage.data.ChildStateData state = maid.getData(ModTaskData.CHILD_STATE_DATA);
+
+        com.example.maidmarriage.data.ChildStateData state =
+                maid.getData(ModTaskData.CHILD_STATE_DATA);
+
         if (state != null && state.child()) {
             return Math.max(0, state.growthTicks());
         }
-        return Math.max(0, maid.getPersistentData().getInt(MaidChildEntity.PERSISTENT_GROWTH_TICKS_KEY));
+
+        return Math.max(
+                0,
+                maid.getPersistentData().getInt(
+                        MaidChildEntity.PERSISTENT_GROWTH_TICKS_KEY));
     }
 
-    private record OverlayLine(long sortTicks, int color, Component text) {
+    private record OverlayLine(
+            long sortTicks,
+            int color,
+            Component text) {
     }
 
     /**
-     * 在真正临近分娩的一天内，始终在右上角给玩家红色提醒，
-     * 避免只靠左上角调试信息时被忽略。
+     * 临近分娩时右上角红字警告。
      */
-    private static void renderUpcomingBirthWarning(net.minecraft.client.gui.GuiGraphics guiGraphics,
-                                                   Minecraft mc,
-                                                   List<EntityMaid> maids) {
+    private static void renderUpcomingBirthWarning(
+            net.minecraft.client.gui.GuiGraphics guiGraphics,
+            Minecraft mc,
+            List<EntityMaid> maids) {
+
         long minLeftTicks = Long.MAX_VALUE;
         EntityMaid target = null;
+
+        /*
+         * 一天内开始警告
+         */
         long warningWindowTicks = 24000L;
+
         for (EntityMaid maid : maids) {
             PregnancyData data = maid.getData(ModTaskData.PREGNANCY_DATA);
+
             if (data == null || !data.pregnant()) {
                 continue;
             }
-            long needTicks = (long) ModConfigs.pregnancyBirthDays() * 24000L;
-            long passedTicks = Math.max(0L, maid.level().getGameTime() - data.conceivedGameTime());
-            long leftTicks = Math.max(0L, needTicks - passedTicks);
-            if (leftTicks <= warningWindowTicks && leftTicks < minLeftTicks) {
+
+            long needTicks =
+                    (long) ModConfigs.pregnancyBirthDays() * 24000L;
+
+            long passedTicks = Math.max(
+                    0L,
+                    maid.level().getGameTime() - data.conceivedGameTime());
+
+            long leftTicks = Math.max(
+                    0L,
+                    needTicks - passedTicks);
+
+            if (leftTicks <= warningWindowTicks
+                    && leftTicks < minLeftTicks) {
+
                 minLeftTicks = leftTicks;
                 target = maid;
             }
         }
+
         if (target == null) {
             return;
         }
-        String timeText = formatSeconds((long) Math.ceil(minLeftTicks / 20.0D));
-        Component text = Component.translatable("overlay.maidmarriage.birth_warning", target.getName(), timeText);
-        int drawX = mc.getWindow().getGuiScaledWidth() - mc.font.width(text) - 8;
-        guiGraphics.drawString(mc.font, text, drawX, 8, 0xFFFF5A5A, true);
+
+        String timeText = formatSeconds(
+                (long) Math.ceil(minLeftTicks / 20.0D));
+
+        Component text = Component.translatable(
+                "overlay.maidmarriage.birth_warning",
+                target.getName(),
+                timeText);
+
+        int drawX =
+                mc.getWindow().getGuiScaledWidth()
+                        - mc.font.width(text)
+                        - 8;
+
+        guiGraphics.drawString(
+                mc.font,
+                text,
+                drawX,
+                8,
+                0xFFFF5A5A,
+                true);
     }
 }

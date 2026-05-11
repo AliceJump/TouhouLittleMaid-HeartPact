@@ -6,11 +6,12 @@ import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -30,7 +31,11 @@ import org.lwjgl.glfw.GLFW;
  *   <li>`C` 复制参数，`R` 重置参数</li>
  * </ul>
  */
-@Mod.EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(
+        modid = MaidMarriageMod.MOD_ID,
+        bus = EventBusSubscriber.Bus.GAME,
+        value = Dist.CLIENT
+)
 public final class YsmLiftHeightDebug {
     private static final double DEFAULT_VISUAL_HEIGHT = -0.20D;
     private static final double DEFAULT_CARRY_CHILD_VISUAL_OFFSET_X = 0.75D;
@@ -38,6 +43,7 @@ public final class YsmLiftHeightDebug {
     private static final double DEFAULT_CARRY_CHILD_VISUAL_HEIGHT = 0.50D;
 
     private static boolean enabled;
+
     private static double visualHeight = DEFAULT_VISUAL_HEIGHT;
     private static double carryChildVisualOffsetX = DEFAULT_CARRY_CHILD_VISUAL_OFFSET_X;
     private static double carryChildVisualOffsetZ = DEFAULT_CARRY_CHILD_VISUAL_OFFSET_Z;
@@ -55,10 +61,11 @@ public final class YsmLiftHeightDebug {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
+    public static void onClientTick(ClientTickEvent event) {
+//        if (event.phase != TickEvent.Phase.END) {
+//            return;
+//        }
+
         if (!ModConfigs.enableDebugTools()) {
             enabled = false;
             clearEdges();
@@ -72,12 +79,17 @@ public final class YsmLiftHeightDebug {
         }
 
         long window = mc.getWindow().getWindow();
+
         boolean f8 = isDown(window, GLFW.GLFW_KEY_F8);
         if (pressed(f8, lastF8)) {
             enabled = !enabled;
-            mc.player.displayClientMessage(Component.literal(enabled
-                    ? "YSM高度调试：开启"
-                    : "YSM高度调试：关闭"), true);
+
+            mc.player.displayClientMessage(
+                    Component.literal(enabled
+                            ? "YSM高度调试：开启"
+                            : "YSM高度调试：关闭"),
+                    true
+            );
         }
         lastF8 = f8;
 
@@ -86,12 +98,19 @@ public final class YsmLiftHeightDebug {
             return;
         }
 
-        boolean shift = isDown(window, GLFW.GLFW_KEY_LEFT_SHIFT) || isDown(window, GLFW.GLFW_KEY_RIGHT_SHIFT);
-        boolean ctrl = isDown(window, GLFW.GLFW_KEY_LEFT_CONTROL) || isDown(window, GLFW.GLFW_KEY_RIGHT_CONTROL);
+        boolean shift =
+                isDown(window, GLFW.GLFW_KEY_LEFT_SHIFT)
+                        || isDown(window, GLFW.GLFW_KEY_RIGHT_SHIFT);
+
+        boolean ctrl =
+                isDown(window, GLFW.GLFW_KEY_LEFT_CONTROL)
+                        || isDown(window, GLFW.GLFW_KEY_RIGHT_CONTROL);
+
         boolean up = isDown(window, GLFW.GLFW_KEY_UP);
         boolean down = isDown(window, GLFW.GLFW_KEY_DOWN);
         boolean left = isDown(window, GLFW.GLFW_KEY_LEFT);
         boolean right = isDown(window, GLFW.GLFW_KEY_RIGHT);
+
         boolean copy = isDown(window, GLFW.GLFW_KEY_C);
         boolean reset = isDown(window, GLFW.GLFW_KEY_R);
 
@@ -102,6 +121,7 @@ public final class YsmLiftHeightDebug {
                 carryChildVisualHeight += 0.05D;
             }
         }
+
         if (pressed(down, lastDown)) {
             if (shift) {
                 visualHeight -= 0.05D;
@@ -109,6 +129,7 @@ public final class YsmLiftHeightDebug {
                 carryChildVisualHeight -= 0.05D;
             }
         }
+
         if (pressed(left, lastLeft)) {
             if (ctrl) {
                 carryChildVisualOffsetZ -= 0.05D;
@@ -116,6 +137,7 @@ public final class YsmLiftHeightDebug {
                 carryChildVisualOffsetX -= 0.05D;
             }
         }
+
         if (pressed(right, lastRight)) {
             if (ctrl) {
                 carryChildVisualOffsetZ += 0.05D;
@@ -123,16 +145,26 @@ public final class YsmLiftHeightDebug {
                 carryChildVisualOffsetX += 0.05D;
             }
         }
+
         if (pressed(reset, lastReset)) {
             visualHeight = DEFAULT_VISUAL_HEIGHT;
             carryChildVisualOffsetX = DEFAULT_CARRY_CHILD_VISUAL_OFFSET_X;
             carryChildVisualOffsetZ = DEFAULT_CARRY_CHILD_VISUAL_OFFSET_Z;
             carryChildVisualHeight = DEFAULT_CARRY_CHILD_VISUAL_HEIGHT;
-            mc.player.displayClientMessage(Component.literal("YSM高度调试：已恢复默认值"), true);
+
+            mc.player.displayClientMessage(
+                    Component.literal("YSM高度调试：已恢复默认值"),
+                    true
+            );
         }
+
         if (pressed(copy, lastCopy)) {
             mc.keyboardHandler.setClipboard(exportValues());
-            mc.player.displayClientMessage(Component.literal("YSM高度调试参数已复制到剪贴板"), true);
+
+            mc.player.displayClientMessage(
+                    Component.literal("YSM高度调试参数已复制到剪贴板"),
+                    true
+            );
         }
 
         lastUp = up;
@@ -144,7 +176,11 @@ public final class YsmLiftHeightDebug {
     }
 
     @SubscribeEvent
-    public static void onRender(RenderGuiOverlayEvent.Post event) {
+    public static void onRender(RenderGuiLayerEvent.Post event) {
+        if (!event.getName().equals(VanillaGuiLayers.HOTBAR)) {
+            return;
+        }
+
         if (!enabled || !ModConfigs.enableDebugTools()) {
             return;
         }
@@ -155,11 +191,21 @@ public final class YsmLiftHeightDebug {
         }
 
         Font font = mc.font;
+
         String title = "YSM高度调试";
-        String liftValue = String.format(Locale.ROOT, "举高高: %.2f", visualHeight);
-        String carryX = String.format(Locale.ROOT, "抱小女仆 左右: %.2f", carryChildVisualOffsetX);
-        String carryZ = String.format(Locale.ROOT, "抱小女仆 前后: %.2f", carryChildVisualOffsetZ);
-        String carryY = String.format(Locale.ROOT, "抱小女仆 上下: %.2f", carryChildVisualHeight);
+
+        String liftValue =
+                String.format(Locale.ROOT, "举高高: %.2f", visualHeight);
+
+        String carryX =
+                String.format(Locale.ROOT, "抱小女仆 左右: %.2f", carryChildVisualOffsetX);
+
+        String carryZ =
+                String.format(Locale.ROOT, "抱小女仆 前后: %.2f", carryChildVisualOffsetZ);
+
+        String carryY =
+                String.format(Locale.ROOT, "抱小女仆 上下: %.2f", carryChildVisualHeight);
+
         String help1 = "↑/↓ 调抱小女仆上下";
         String help2 = "←/→ 调抱小女仆左右";
         String help3 = "Ctrl+←/→ 调抱小女仆前后";
@@ -168,8 +214,23 @@ public final class YsmLiftHeightDebug {
 
         int width = Math.max(
                 Math.max(
-                        Math.max(font.width(title), Math.max(font.width(liftValue), Math.max(font.width(carryX), Math.max(font.width(carryZ), font.width(carryY))))),
-                        Math.max(font.width(help1), Math.max(font.width(help2), Math.max(font.width(help3), font.width(help4))))
+                        Math.max(
+                                font.width(title),
+                                Math.max(
+                                        font.width(liftValue),
+                                        Math.max(
+                                                font.width(carryX),
+                                                Math.max(font.width(carryZ), font.width(carryY))
+                                        )
+                                )
+                        ),
+                        Math.max(
+                                font.width(help1),
+                                Math.max(
+                                        font.width(help2),
+                                        Math.max(font.width(help3), font.width(help4))
+                                )
+                        )
                 ),
                 font.width(help5)
         ) + 18;
@@ -177,13 +238,28 @@ public final class YsmLiftHeightDebug {
         int x = mc.getWindow().getGuiScaledWidth() - width - 10;
         int y = 42;
 
-        event.getGuiGraphics().fill(x - 5, y - 5, x + width, y + 100, 0xAA1E1024);
-        event.getGuiGraphics().fill(x - 5, y - 5, x + width, y - 4, 0xFFFF8BCF);
+        event.getGuiGraphics().fill(
+                x - 5,
+                y - 5,
+                x + width,
+                y + 112,
+                0xAA1E1024
+        );
+
+        event.getGuiGraphics().fill(
+                x - 5,
+                y - 5,
+                x + width,
+                y - 4,
+                0xFFFF8BCF
+        );
+
         draw(event, font, x, y, title, 0xFFFFE08A);
         draw(event, font, x, y + 12, liftValue, 0xFF8BFF98);
         draw(event, font, x, y + 24, carryX, 0xFF8BD7FF);
         draw(event, font, x, y + 36, carryZ, 0xFF8BD7FF);
         draw(event, font, x, y + 48, carryY, 0xFF8BD7FF);
+
         draw(event, font, x, y + 62, help1, 0xFFE8E8E8);
         draw(event, font, x, y + 74, help2, 0xFFE8E8E8);
         draw(event, font, x, y + 86, help3, 0xFFE8E8E8);
@@ -208,13 +284,19 @@ public final class YsmLiftHeightDebug {
     }
 
     public static double resolveVisualHeight(double configuredLiftHeight) {
-        return visualHeight + (configuredLiftHeight - ModConfigs.DEFAULT_LIFT_HEIGHT);
+        return visualHeight
+                + (configuredLiftHeight - ModConfigs.DEFAULT_LIFT_HEIGHT);
     }
 
     private static String exportValues() {
         return String.format(
                 Locale.ROOT,
-                "ysmLiftVisualHeight=%.2f%nymCarryChildVisualOffsetX=%.2f%nymCarryChildVisualOffsetZ=%.2f%nymCarryChildVisualHeight=%.2f",
+                """
+                ysmLiftVisualHeight=%.2f
+                ysmCarryChildVisualOffsetX=%.2f
+                ysmCarryChildVisualOffsetZ=%.2f
+                ysmCarryChildVisualHeight=%.2f
+                """,
                 visualHeight,
                 carryChildVisualOffsetX,
                 carryChildVisualOffsetZ,
@@ -222,7 +304,12 @@ public final class YsmLiftHeightDebug {
         );
     }
 
-    private static void draw(RenderGuiOverlayEvent.Post event, Font font, int x, int y, String text, int color) {
+    private static void draw(RenderGuiLayerEvent.Post event,
+                             Font font,
+                             int x,
+                             int y,
+                             String text,
+                             int color) {
         event.getGuiGraphics().drawString(font, text, x, y, color, true);
     }
 

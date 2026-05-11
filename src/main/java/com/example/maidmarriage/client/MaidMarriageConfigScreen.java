@@ -198,7 +198,7 @@ public class MaidMarriageConfigScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
 
         int panelLeft = this.width / 2 - 176;
         int panelRight = this.width / 2 + 176;

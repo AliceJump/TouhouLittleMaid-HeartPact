@@ -1036,7 +1036,10 @@ public final class MaidWorkManager {
         }
 
         private static ResourceLocation id(String path) {
-            return new ResourceLocation(MaidMarriageMod.MOD_ID, path);
+            return ResourceLocation.fromNamespaceAndPath(
+                    MaidMarriageMod.MOD_ID,
+                    path
+            );
         }
 
         private static Optional<WorkMode> fromTask(IMaidTask task) {
