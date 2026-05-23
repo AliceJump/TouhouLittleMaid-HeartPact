@@ -3,10 +3,10 @@ package com.example.maidmarriage.compat;
 import com.example.maidmarriage.MaidMarriageMod;
 import com.example.maidmarriage.entity.MaidChildEntity;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTombstoneEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = MaidMarriageMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public final class MaidDeathBridge {
     private MaidDeathBridge() {
     }

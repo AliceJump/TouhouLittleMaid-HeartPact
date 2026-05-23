@@ -39,8 +39,8 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 /**
  * 小女仆工作系统：

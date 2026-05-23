@@ -1,10 +1,22 @@
 package com.example.maidmarriage.network.payload;
+import com.example.maidmarriage.MaidMarriageMod;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.FriendlyByteBuf;
 
-public class CarryChildStateSyncPayload {
+public class CarryChildStateSyncPayload implements CustomPacketPayload {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "carry_child_state_sync");
+    public static final CustomPacketPayload.Type<CarryChildStateSyncPayload> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, CarryChildStateSyncPayload> STREAM_CODEC = StreamCodec.of(
+            (buf, msg) -> CarryChildStateSyncPayload.encode(msg, buf),
+            CarryChildStateSyncPayload::decode);
+
     private final UUID ownerUuid;
     @Nullable
     private final UUID adultUuid;
@@ -37,6 +49,11 @@ public class CarryChildStateSyncPayload {
     @Nullable
     public UUID proxyUuid() {
         return proxyUuid;
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     public static void encode(CarryChildStateSyncPayload msg, FriendlyByteBuf buf) {

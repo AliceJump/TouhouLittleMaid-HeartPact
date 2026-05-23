@@ -1,4 +1,10 @@
 package com.example.maidmarriage.network.payload;
+import com.example.maidmarriage.MaidMarriageMod;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -7,7 +13,13 @@ import net.minecraft.network.FriendlyByteBuf;
 /**
  * 举高高状态同步包（服务端 -> 客户端）。
  */
-public class LiftStateSyncPayload {
+public class LiftStateSyncPayload implements CustomPacketPayload {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "lift_state_sync");
+    public static final CustomPacketPayload.Type<LiftStateSyncPayload> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, LiftStateSyncPayload> STREAM_CODEC = StreamCodec.of(
+            (buf, msg) -> LiftStateSyncPayload.encode(msg, buf),
+            LiftStateSyncPayload::decode);
+
     private final UUID playerUuid;
     @Nullable
     private final UUID maidUuid;
@@ -38,6 +50,11 @@ public class LiftStateSyncPayload {
 
     public double liftHeight() {
         return liftHeight;
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     public static void encode(LiftStateSyncPayload msg, FriendlyByteBuf buf) {

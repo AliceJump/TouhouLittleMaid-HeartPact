@@ -1,4 +1,10 @@
 package com.example.maidmarriage.network.payload;
+import com.example.maidmarriage.MaidMarriageMod;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -16,7 +22,13 @@ import net.minecraft.network.FriendlyByteBuf;
  * - 面板动作 -> 切换 hugActive；
  * 不会再出现 UI 想切姿态，却意外把整个交互会话关掉的问题。
  */
-public class ToggleHugPosePayload {
+public class ToggleHugPosePayload implements CustomPacketPayload {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "toggle_hug_pose");
+    public static final CustomPacketPayload.Type<ToggleHugPosePayload> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ToggleHugPosePayload> STREAM_CODEC = StreamCodec.of(
+            (buf, msg) -> ToggleHugPosePayload.encode(msg, buf),
+            ToggleHugPosePayload::decode);
+
     @Nullable
     private final UUID maidUuid;
 
@@ -27,6 +39,11 @@ public class ToggleHugPosePayload {
     @Nullable
     public UUID maidUuid() {
         return maidUuid;
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     public static void encode(ToggleHugPosePayload msg, FriendlyByteBuf buf) {

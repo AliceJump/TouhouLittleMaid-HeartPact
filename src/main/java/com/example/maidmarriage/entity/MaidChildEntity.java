@@ -63,12 +63,6 @@ public class MaidChildEntity extends EntityMaid {
         this.setPersistenceRequired();
     }
 
-    @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_GROWTH_TICKS, 0);
-    }
-
     public void setParents(UUID motherUuid, UUID fatherUuid) {
         this.motherUuid = motherUuid;
         this.fatherUuid = fatherUuid;

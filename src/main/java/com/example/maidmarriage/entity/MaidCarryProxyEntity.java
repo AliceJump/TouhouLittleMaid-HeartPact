@@ -15,7 +15,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 
 /**
  * 大女仆抱小女仆时使用的中间代理实体。
@@ -50,12 +49,6 @@ public class MaidCarryProxyEntity extends Entity {
         this.blocksBuilding = false;
         this.setInvisible(true);
         this.setNoGravity(true);
-    }
-
-    @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_ADULT_UUID, Optional.empty());
-        this.entityData.define(DATA_CHILD_UUID, Optional.empty());
     }
 
     @Override
@@ -126,12 +119,10 @@ public class MaidCarryProxyEntity extends Entity {
         callback.accept(passenger, targetPos.x, targetPos.y, targetPos.z);
     }
 
-    @Override
     public double getPassengersRidingOffset() {
         return 0.0D;
     }
 
-    @Override
     public double getMyRidingOffset() {
         return 0.0D;
     }
@@ -154,11 +145,6 @@ public class MaidCarryProxyEntity extends Entity {
     @Override
     public boolean isAttackable() {
         return false;
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     public void setCarryTargets(@Nullable UUID adultUuid, @Nullable UUID childUuid) {

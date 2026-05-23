@@ -1,10 +1,22 @@
 package com.example.maidmarriage.network.payload;
+import com.example.maidmarriage.MaidMarriageMod;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.FriendlyByteBuf;
 
-public class HugStateSyncPayload {
+public class HugStateSyncPayload implements CustomPacketPayload {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "hug_state_sync");
+    public static final CustomPacketPayload.Type<HugStateSyncPayload> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, HugStateSyncPayload> STREAM_CODEC = StreamCodec.of(
+            (buf, msg) -> HugStateSyncPayload.encode(msg, buf),
+            HugStateSyncPayload::decode);
+
     private final UUID playerUuid;
     @Nullable
     private final UUID maidUuid;
@@ -37,6 +49,11 @@ public class HugStateSyncPayload {
 
     public boolean childNameRequired() {
         return childNameRequired;
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     public static void encode(HugStateSyncPayload msg, FriendlyByteBuf buf) {

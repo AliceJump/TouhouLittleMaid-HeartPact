@@ -4,8 +4,6 @@ import com.example.maidmarriage.compat.MaidLiftManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -13,7 +11,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 
 /**
  * 举高高专用的“代理锚点实体”。
@@ -33,7 +30,6 @@ import net.minecraftforge.network.NetworkHooks;
 public class LiftProxyEntity extends Entity {
     private static final double HEAD_OFFSET_Y = 0.10D;
     private static final double CROUCH_OFFSET_Y = -0.20D;
-
     public LiftProxyEntity(EntityType<? extends LiftProxyEntity> type, Level level) {
         super(type, level);
         this.noPhysics = true;
@@ -43,15 +39,16 @@ public class LiftProxyEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-    }
-
-    @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+
     }
 
     /**
@@ -100,7 +97,6 @@ public class LiftProxyEntity extends Entity {
     /**
      * 代理实体自己骑在玩家身上时，不需要再额外下沉。
      */
-    @Override
     public double getMyRidingOffset() {
         return 0.0D;
     }
@@ -123,11 +119,6 @@ public class LiftProxyEntity extends Entity {
     @Override
     public boolean isAttackable() {
         return false;
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Nullable

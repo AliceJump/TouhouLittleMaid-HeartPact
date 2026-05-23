@@ -16,9 +16,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.Optional;
 import java.util.Objects;
@@ -74,7 +73,7 @@ public final class SoulSlabChildBridge {
              * 因此胶片/魂符只写 child 标记，不改 id；恢复成普通 EntityMaid 后，
              * 再由 EntityJoinLevelEvent 中的 repairOrPromoteLegacyChild 替换成 MaidChildEntity。
              */
-            data.putString("id", Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(ModEntities.MAID_CHILD.get())).toString());
+            data.putString("id", Objects.requireNonNull(ModEntities.MAID_CHILD.getId()).toString());
         }
 
         if (isChild) {

@@ -1,4 +1,10 @@
 package com.example.maidmarriage.network.payload;
+import com.example.maidmarriage.MaidMarriageMod;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -11,7 +17,13 @@ import net.minecraft.network.FriendlyByteBuf;
  * - 当前没有小女仆互动会话时：尝试进入站立锁定；
  * - 当前已经有会话时：结束这份会话。
  */
-public class ChildInteractionPayload {
+public class ChildInteractionPayload implements CustomPacketPayload {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "child_interaction");
+    public static final CustomPacketPayload.Type<ChildInteractionPayload> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ChildInteractionPayload> STREAM_CODEC = StreamCodec.of(
+            (buf, msg) -> ChildInteractionPayload.encode(msg, buf),
+            ChildInteractionPayload::decode);
+
     @Nullable
     private final UUID maidUuid;
 
@@ -22,6 +34,11 @@ public class ChildInteractionPayload {
     @Nullable
     public UUID maidUuid() {
         return maidUuid;
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     public static void encode(ChildInteractionPayload msg, FriendlyByteBuf buf) {

@@ -44,10 +44,10 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public final class MarriageEventHandler {
     private static final String TAG_PLAYER_PRIMARY_MAID = "maidmarriage_primary_maid";
@@ -558,19 +558,19 @@ public final class MarriageEventHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
+    public static void onPlayerTick(PlayerTickEvent event) {
+        if (event.getEntity().level().isClientSide()) {
             return;
         }
-        if (event.player.level().isClientSide()) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
         }
-        UUID playerId = event.player.getUUID();
+        UUID playerId = player.getUUID();
         Integer elapsed = PROPOSAL_PUNISH_ACTIVE.get(playerId);
         if (elapsed == null) {
             return;
         }
-        if (!event.player.isAlive()) {
+        if (!player.isAlive()) {
             PROPOSAL_PUNISH_ACTIVE.remove(playerId);
             return;
         }
@@ -579,20 +579,20 @@ public final class MarriageEventHandler {
         if (nextElapsed % PROPOSAL_PUNISH_STRIKE_INTERVAL_TICKS != 0) {
             return;
         }
-        float currentHealth = event.player.getHealth();
+        float currentHealth = player.getHealth();
         if (currentHealth <= PROPOSAL_PUNISH_TARGET_HEALTH) {
             PROPOSAL_PUNISH_ACTIVE.remove(playerId);
             return;
         }
-        if (event.player.level() instanceof ServerLevel level) {
-            summonProposalPunishLightning(level, event.player, false);
+        if (player.level() instanceof ServerLevel level) {
+            summonProposalPunishLightning(level, player, false);
         }
-        applyProposalFreezeEffect(event.player);
+        applyProposalFreezeEffect(player);
         float damage = currentHealth > PROPOSAL_PUNISH_HEALTH_THRESHOLD
                 ? currentHealth * PROPOSAL_PUNISH_DAMAGE_RATIO
                 : PROPOSAL_PUNISH_DAMAGE_LOW_HEALTH;
         float nextHealth = Math.max(PROPOSAL_PUNISH_TARGET_HEALTH, currentHealth - damage);
-        event.player.setHealth(nextHealth);
+        player.setHealth(nextHealth);
         if (nextHealth <= PROPOSAL_PUNISH_TARGET_HEALTH) {
             PROPOSAL_PUNISH_ACTIVE.remove(playerId);
         }

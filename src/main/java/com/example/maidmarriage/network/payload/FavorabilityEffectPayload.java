@@ -1,4 +1,10 @@
 package com.example.maidmarriage.network.payload;
+import com.example.maidmarriage.MaidMarriageMod;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.UUID;
 import net.minecraft.network.FriendlyByteBuf;
@@ -9,7 +15,13 @@ import net.minecraft.network.FriendlyByteBuf;
  * <p>服务端完成真实好感结算后，把“目标女仆 + 实际变化量”同步给客户端，
  * 客户端再负责播放粒子和飘字。
  */
-public class FavorabilityEffectPayload {
+public class FavorabilityEffectPayload implements CustomPacketPayload {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "favorability_effect");
+    public static final CustomPacketPayload.Type<FavorabilityEffectPayload> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, FavorabilityEffectPayload> STREAM_CODEC = StreamCodec.of(
+            (buf, msg) -> FavorabilityEffectPayload.encode(msg, buf),
+            FavorabilityEffectPayload::decode);
+
     private final UUID maidUuid;
     private final int delta;
 
@@ -24,6 +36,11 @@ public class FavorabilityEffectPayload {
 
     public int delta() {
         return delta;
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     public static void encode(FavorabilityEffectPayload msg, FriendlyByteBuf buf) {

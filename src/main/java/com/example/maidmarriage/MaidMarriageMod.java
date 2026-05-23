@@ -7,15 +7,15 @@ import com.example.maidmarriage.init.ModEntities;
 import com.example.maidmarriage.init.ModItems;
 import com.example.maidmarriage.network.ModNetworking;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 @Mod(MaidMarriageMod.MOD_ID)
 /**
@@ -29,11 +29,13 @@ public final class MaidMarriageMod {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.ITEMS.register(modBus);
         ModEntities.ENTITY_TYPES.register(modBus);
-        ModNetworking.register();
-        MinecraftForge.EVENT_BUS.register(ModDebugCommands.class);
+        modBus.addListener(ModNetworking::registerPayloadHandlers);
+        NeoForge.EVENT_BUS.register(ModDebugCommands.class);
         modBus.addListener(MaidMarriageMod::addCreativeTabItems);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ModConfigs.SPEC);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClientOnlyBootstrap::init);
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            ClientOnlyBootstrap.init(ModLoadingContext.get().getActiveContainer());
+        }
     }
 
     private static void addCreativeTabItems(BuildCreativeModeTabContentsEvent event) {

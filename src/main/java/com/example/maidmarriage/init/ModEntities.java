@@ -4,12 +4,11 @@ import com.example.maidmarriage.MaidMarriageMod;
 import com.example.maidmarriage.entity.LiftProxyEntity;
 import com.example.maidmarriage.entity.MaidCarryProxyEntity;
 import com.example.maidmarriage.entity.MaidChildEntity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
  * 实体注册表：注册子代女仆实体类型。
@@ -17,16 +16,16 @@ import net.minecraftforge.registries.RegistryObject;
  */
 public final class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
-            DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MaidMarriageMod.MOD_ID);
+            DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MaidMarriageMod.MOD_ID);
 
-    public static final RegistryObject<EntityType<MaidChildEntity>> MAID_CHILD =
+    public static final DeferredHolder<EntityType<?>, EntityType<MaidChildEntity>> MAID_CHILD =
             ENTITY_TYPES.register("maid_child", () ->
                     EntityType.Builder.of(MaidChildEntity::new, MobCategory.CREATURE)
                             .sized(0.6F, 1.5F)
                             .clientTrackingRange(10)
-                            .build(ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "maid_child").toString()));
+                            .build("maid_child"));
 
-    public static final RegistryObject<EntityType<LiftProxyEntity>> LIFT_PROXY =
+    public static final DeferredHolder<EntityType<?>, EntityType<LiftProxyEntity>> LIFT_PROXY =
             ENTITY_TYPES.register("lift_proxy", () ->
                     EntityType.Builder.<LiftProxyEntity>of(LiftProxyEntity::new, MobCategory.MISC)
                             .sized(0.01F, 0.01F)
@@ -34,9 +33,9 @@ public final class ModEntities {
                             .updateInterval(1)
                             .noSave()
                             .noSummon()
-                            .build(ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "lift_proxy").toString()));
+                            .build("lift_proxy"));
 
-    public static final RegistryObject<EntityType<MaidCarryProxyEntity>> MAID_CARRY_PROXY =
+    public static final DeferredHolder<EntityType<?>, EntityType<MaidCarryProxyEntity>> MAID_CARRY_PROXY =
             ENTITY_TYPES.register("maid_carry_proxy", () ->
                     EntityType.Builder.<MaidCarryProxyEntity>of(MaidCarryProxyEntity::new, MobCategory.MISC)
                             .sized(0.01F, 0.01F)
@@ -44,7 +43,7 @@ public final class ModEntities {
                             .updateInterval(1)
                             .noSave()
                             .noSummon()
-                            .build(ResourceLocation.fromNamespaceAndPath(MaidMarriageMod.MOD_ID, "maid_carry_proxy").toString()));
+                            .build("maid_carry_proxy"));
 
     private ModEntities() {
     }

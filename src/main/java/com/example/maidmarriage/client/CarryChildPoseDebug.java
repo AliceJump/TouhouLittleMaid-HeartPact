@@ -68,9 +68,6 @@ public final class CarryChildPoseDebug {
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent event) {
-//        if (event.phase != TickEvent.Phase.END) {
-//            return;
-//        }
         if (!ModConfigs.enableDebugTools()) {
             enabled = false;
             clearKeyEdges();

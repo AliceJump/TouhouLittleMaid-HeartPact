@@ -3,8 +3,8 @@ package com.example.maidmarriage.compat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.DistExecutor;
 
 /**
  * 给 YSM 的 `tlm.*` molang 提供我们模组自己的动作状态。
